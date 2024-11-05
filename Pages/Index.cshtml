@@ -1,0 +1,53 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="container">
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <button class="nav-link active" id="nav-all-tab" data-bs-toggle="tab" data-bs-target="#nav-all" type="button" role="tab" aria-controls="nav-all" aria-selected="true">
+                All Tasks
+            </button>
+            <button class="nav-link" id="nav-completed-tab" data-bs-toggle="tab" data-bs-target="#nav-completed" type="button" role="tab" aria-controls="nav-completed" aria-selected="false">
+                Completed Tasks
+            </button>
+            <button class="nav-link" id="nav-pending-tab" data-bs-toggle="tab" data-bs-target="#nav-pending" type="button" role="tab" aria-controls="nav-pending" aria-selected="false">
+                Pending Tasks
+            </button>
+        </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-all" role="tabpanel" aria-labelledby="nav-all-tab" tabindex="0">
+            @foreach(var item in Model.Tasks)
+            {
+                <div>@item.Name</div>
+@*                 <div>@item.DueDate</div>
+                <div>@item.Priority</div>
+                <div>@item.Category.Name</div>
+                <div>@item.IsComplete</div> *@
+            }
+        </div>
+        <div class="tab-pane fade" id="nav-completed" role="tabpanel" aria-labelledby="nav-completed-tab" tabindex="0">
+            @foreach (var item in Model.TasksCompleted)
+            {
+                <div>@item.Name</div>
+                <div>@item.DueDate</div>
+                <div>@item.Priority</div>
+                <div>@item.Category.Name</div>
+                <div>@item.IsComplete</div>
+            }
+        </div>
+        <div class="tab-pane fade" id="nav-pending" role="tabpanel" aria-labelledby="nav-pending-tab" tabindex="0">
+            @foreach (var item in Model.TasksPending)
+            {
+                <div>@item.Name</div>
+                <div>@item.DueDate</div>
+                <div>@item.Priority</div>
+                <div>@item.Category.Name</div>
+                <div>@item.IsComplete</div>
+            }
+        </div>
+    </div>
+</div>

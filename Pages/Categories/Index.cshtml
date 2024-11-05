@@ -1,0 +1,25 @@
+﻿@page
+@model TaskManager.Pages.Categories.IndexModel
+@{
+    ViewData["Title"] = "Category List";
+}
+
+<div class="container">
+    <h4>Categories</h4>
+    <hr />
+    @foreach (var item in Model.Categories)
+    {
+        <div class="row">
+            <div class="col">
+                @item.Name
+            </div>
+            <div class="col">
+                <a asp-page="/Categories/Edit" asp-route-id="@item.Id">Edit</a>
+            </div>
+            <div class="col">
+                <a asp-page="/Categories/Delete" asp-route-id="@item.Id">Delete</a>
+            </div>
+        </div>
+        <hr />
+    }
+</div>

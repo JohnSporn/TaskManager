@@ -1,0 +1,15 @@
+﻿@page
+@model TaskManager.Pages.Categories.CreateModel
+@{
+    ViewData["Title"] = "Create";
+}
+
+<form method="post">
+    <div>
+        <label class="form-label" asp-for="Input.Name"></label>
+        <input type="text" class="form-control" asp-for="Input.Name" />
+    </div>
+    <div>
+        <input type="submit" value="Create" class="btn btn-success" />
+    </div>
+</form>
