@@ -56,7 +56,7 @@ namespace TaskManager.Pages.Tasks
                 IsComplete = Input.IsComplete
             };
             await _taskRepository.Task_Upsert(task);
-            return RedirectToPage("/Tasks");
+            return RedirectToPage("/Index");
         }
     }
 }

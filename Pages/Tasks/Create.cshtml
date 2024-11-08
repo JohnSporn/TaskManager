@@ -24,11 +24,11 @@
     </div>
     <div>
         <label class="form-label" asp-for="Input.Category"></label>
-        <select class="form-select" asp-for="Input.Category">
+        <select class="form-select" asp-for="Input.Category.Id">
             <option selected hidden>Choose category</option>
             @foreach (var item in Model.Categories)
             {
-                <option value="@item">@item</option>
+                <option value="@item.Id">@item.Name</option>
             }
         </select>
     </div>
@@ -39,5 +39,8 @@
             <option value="true">Yes</option>
             <option value="false">No</option>
         </select>
+    </div>
+    <div>
+        <input class="btn btn-success" type="submit" value="Submit" />
     </div>
 </form>

@@ -23,7 +23,7 @@ namespace TaskManager.Pages
         public IList<TaskItem> TasksCompleted { get; set; } = new List<TaskItem>();
         public IList<TaskItem> TasksPending { get; set; } = new List<TaskItem>();
 
-        public async void OnGet()
+        public async Task<IActionResult> OnGet()
         {
             await foreach(var item in _repository.Tasks_Get())
             {
@@ -32,6 +32,7 @@ namespace TaskManager.Pages
             Tasks = Tasks.OrderByDescending(t => t.IsComplete).ToList();
             TasksCompleted = Tasks.Where(x => x.IsComplete == true).ToList();
             TasksPending = Tasks.Where(t => t.IsComplete == false).ToList();
+            return Page();
         }
     }
 }

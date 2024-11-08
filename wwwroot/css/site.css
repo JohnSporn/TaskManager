@@ -17,6 +17,10 @@ html {
   min-height: 100%;
 }
 
+.navbar {
+    background-color: #B9CDDA !important;
+}
+
 body {
     margin-bottom: 60px;
     background-color: #D7DAE5;
