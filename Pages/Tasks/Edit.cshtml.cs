@@ -59,24 +59,17 @@ namespace TaskManager.Pages.Tasks
 
         public async Task<IActionResult> OnPost(int id)
         {
-            if (await TryUpdateModelAsync<InputModel>(
-                Input,
-                "input",
-                i => i.Name))
+            var task = new TaskItem
             {
-                var task = new TaskItem
-                {
-                    Id = id,
-                    Name = Input.Name,
-                    DueDate = Input.DueDate,
-                    Priority = Input.Priority,
-                    Category = Input.Category,
-                    IsComplete = Input.IsComplete
-                };
-                await _repository.Task_Upsert(task);
-                return RedirectToPage("/Index");
-            }
-            return Page();
+                Id = id,
+                Name = Input.Name,
+                DueDate = Input.DueDate,
+                Priority = Input.Priority,
+                Category = Input.Category,
+                IsComplete = Input.IsComplete
+            };
+            await _repository.Task_Upsert(task);
+            return RedirectToPage("/Index");
         }
     }
 }

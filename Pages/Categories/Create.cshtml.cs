@@ -32,19 +32,12 @@ namespace TaskManager.Pages.Categories
 
         public async Task<IActionResult> OnPost()
         {
-            if (await TryUpdateModelAsync<InputModel>(
-                Input,
-                "input",
-                c => c.Name))
+            var category = new Category
             {
-                var category = new Category
-                {
-                    Name = Input.Name
-                };
-                await _repository.Category_Upsert(category);
-                return RedirectToPage("/Categories/Index");
-            }
-            return Page();
+                Name = Input.Name
+            };
+            await _repository.Category_Upsert(category);
+            return RedirectToPage("/Categories/Index");
         }
     }
 }
