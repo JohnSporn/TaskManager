@@ -45,7 +45,7 @@ namespace TaskManager.Data.Repositories
             }
         }
 
-        public async Task<TaskItem> Tasks_GetById(int id)
+        public async Task<TaskItem> Tasks_GetById(int? id)
         {
             using (var connection = new SqlConnection(_connectionString))
             {

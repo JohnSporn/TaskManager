@@ -1,12 +1,82 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.ComponentModel.DataAnnotations;
+using TaskManager.Data.Models;
+using TaskManager.Data.Repositories;
 
 namespace TaskManager.Pages.Tasks
 {
     public class EditModel : PageModel
     {
-        public void OnGet()
+        private readonly ITaskRepository _repository;
+        private readonly ILogger _logger;
+
+        public EditModel(ITaskRepository repository, ILogger<CreateModel> logger)
         {
+            _repository = repository;
+            _logger = logger;
+        }
+
+        public class InputModel
+        {
+            [Required]
+            public required string Name { get; set; }
+            [Required]
+            public required DateTime DueDate { get; set; }
+            [Required]
+            public required Priority Priority { get; set; }
+            [Required]
+            public required Category Category { get; set; }
+            [Required]
+            public required bool IsComplete { get; set; }
+        };
+
+        [BindProperty]
+        public InputModel Input { get; set; }
+
+        public async Task<IActionResult> OnGet(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var task = await _repository.Tasks_GetById(id);
+
+            Input = new InputModel
+            {
+                Name = task.Name,
+                DueDate = task.DueDate,
+                Priority = task.Priority,
+                Category = task.Category,
+                IsComplete = task.IsComplete,
+            };
+            if (Input == null)
+            {
+                return NotFound();
+            }
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPost(int id)
+        {
+            if (await TryUpdateModelAsync<InputModel>(
+                Input,
+                "input",
+                i => i.Name))
+            {
+                var task = new TaskItem
+                {
+                    Id = id,
+                    Name = Input.Name,
+                    DueDate = Input.DueDate,
+                    Priority = Input.Priority,
+                    Category = Input.Category,
+                    IsComplete = Input.IsComplete
+                };
+                await _repository.Task_Upsert(task);
+                return RedirectToPage("/Index");
+            }
+            return Page();
         }
     }
 }
