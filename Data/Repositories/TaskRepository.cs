@@ -51,7 +51,7 @@ namespace TaskManager.Data.Repositories
             {
                 var sql = "SELECT T.Name, T.DueDate, T.Priority, C.Name, T.IsComplete " +
                     "FROM TaskItem T INNER JOIN Category C ON t.CategoryId = C.Id " +
-                    "WHERE Id = @Id";
+                    "WHERE T.Id = @Id";
                 return await connection.QuerySingleAsync<TaskItem>(sql, new { Id = id });
             }
         }

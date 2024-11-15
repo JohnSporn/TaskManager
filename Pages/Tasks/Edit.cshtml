@@ -9,7 +9,38 @@
         <label class="form-label" asp-for="Input.Name"></label>
         <input type="text" class="form-control" asp-for="Input.Name" />
     </div>
+    <div>
+        <label class="form-label" asp-for="Input.DueDate"></label>
+        <input type="date" class="form-control" asp-for="Input.DueDate" />
+    </div>
+    <div>
+        <label class="form-label" asp-for="Input.Priority"></label>
+        <select class="form-select" asp-for="Input.Priority">
+            <option selected hidden>Choose priority level</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+        </select>
+    </div>
+    <div>
+        <label class="form-label" asp-for="Input.Category"></label>
+        <select class="form-select" asp-for="Input.Category.Id">
+            <option selected hidden value="@Model.Input.Category.Id">@Model.Input.Category.Name</option>
+            @foreach (var item in Model.Categories)
+            {
+                <option value="@item.Id">@item.Name</option>
+            }
+        </select>
+    </div>
+    <div>
+        <label class="form-label" asp-for="Input.IsComplete"></label>
+        <select class="form-select" asp-for="Input.IsComplete">
+            <option selected hidden>Choose one</option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </select>
+    </div>
     <div class="mt-3">
-        <input type="submit" value="Update" class="btn btn-success w-100" />
+        <input class="btn btn-success w-100" type="submit" value="Update" />
     </div>
 </form>

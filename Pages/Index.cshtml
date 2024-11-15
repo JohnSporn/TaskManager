@@ -30,7 +30,8 @@
                         <th>Due Date</th>
                         <th>Priority</th>
                         <th>Category</th>
-                        <th>Completed</th>
+                        <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -41,7 +42,8 @@
                             <td>@item.DueDate</td>
                             <td>@item.Priority</td>
                             <td>@item.Category.Name</td>
-                            <td>@(item.IsComplete ? "Yes" : "No")</td>
+                            <td><a class="btn-link" asp-page="/Tasks/Edit" asp-route-id="@item.Id">Edit</a></td>
+                            <td><a class="btn-link" asp-page="/Tasks/Delete" asp-route-id="@item.Id">Cancel</a></td>
                         </tr>
                     }
                 </tbody>
@@ -55,7 +57,8 @@
                         <th>Due Date</th>
                         <th>Priority</th>
                         <th>Category</th>
-                        <th>Completed</th>
+                        <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -66,7 +69,8 @@
                             <td>@item.DueDate</td>
                             <td>@item.Priority</td>
                             <td>@item.Category.Name</td>
-                            <td>@item.IsComplete</td>
+                            <td><a class="btn-link" asp-page="/Tasks/Edit" asp-route-id="@item.Id">Edit</a></td>
+                            <td><a class="btn-link" asp-page="/Tasks/Delete" asp-route-id="@item.Id">Cancel</a></td>
                         </tr>
                     }
                 </tbody>
@@ -80,18 +84,20 @@
                         <th>Due Date</th>
                         <th>Priority</th>
                         <th>Category</th>
-                        <th>Completed</th>
+                        <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model.TasksPending)
                     {
-                        <tr>
+                        <tr onclick="Edit">
                             <td>@item.Name</td>
                             <td>@item.DueDate</td>
                             <td>@item.Priority</td>
                             <td>@item.Category.Name</td>
-                            <td>@(item.IsComplete ? "Yes" : "No")</td>
+                            <td><a class="btn-link" asp-page="/Tasks/Edit" asp-route-id="@item.Id">Edit</a></td>
+                            <td><a class="btn-link" asp-page="/Tasks/Delete" asp-route-id="@item.Id">Cancel</a></td>
                         </tr>
                     }
                 </tbody>

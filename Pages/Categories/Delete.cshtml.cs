@@ -55,9 +55,8 @@ namespace TaskManager.Pages.Categories
             {
                 _logger.LogError(ex, ErrorMessage);
 
-                return RedirectToAction("/Categories/Delete", new { id, saveChangesError = true });
+                return RedirectToAction("/Categories/Delete", new { id });
             }
         }
-
     }
 }

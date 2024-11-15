@@ -9,11 +9,13 @@ namespace TaskManager.Pages.Tasks
     public class EditModel : PageModel
     {
         private readonly ITaskRepository _repository;
+        private readonly ICategoryRepository _categoryRepository;
         private readonly ILogger _logger;
 
-        public EditModel(ITaskRepository repository, ILogger<CreateModel> logger)
+        public EditModel(ITaskRepository repository, ICategoryRepository categoryRepository, ILogger<CreateModel> logger)
         {
             _repository = repository;
+            _categoryRepository = categoryRepository;
             _logger = logger;
         }
 
@@ -33,6 +35,7 @@ namespace TaskManager.Pages.Tasks
 
         [BindProperty]
         public InputModel Input { get; set; }
+        public IList<Category> Categories { get; set; } = new List<Category>();
 
         public async Task<IActionResult> OnGet(int? id)
         {
@@ -53,6 +56,10 @@ namespace TaskManager.Pages.Tasks
             if (Input == null)
             {
                 return NotFound();
+            }
+            await foreach (var item in _categoryRepository.Categories_Get())
+            {
+                Categories.Add(item);
             }
             return Page();
         }
