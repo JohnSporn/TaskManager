@@ -24,7 +24,7 @@
     </div>
     <div>
         <label class="form-label" asp-for="Input.Category"></label>
-        <select class="form-select" asp-for="Input.Category.Id">
+        <select class="form-select" asp-for="Input.Category">
             <option selected hidden value="@Model.Input.Category.Id">@Model.Input.Category.Name</option>
             @foreach (var item in Model.Categories)
             {

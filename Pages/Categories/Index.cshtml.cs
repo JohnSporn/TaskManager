@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TaskManager.Data.Models;
@@ -5,6 +6,7 @@ using TaskManager.Data.Repositories;
 
 namespace TaskManager.Pages.Categories
 {
+    [Authorize]
     public class IndexModel : PageModel
     {
         private readonly ICategoryRepository _repository;

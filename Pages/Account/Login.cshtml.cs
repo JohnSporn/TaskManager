@@ -1,7 +1,9 @@
 using Auth0.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using TaskManager.Data.Models;
 
 namespace TaskManager.Pages.Account
 {
@@ -12,7 +14,7 @@ namespace TaskManager.Pages.Account
             var authenticationProperties = new LoginAuthenticationPropertiesBuilder()
             .WithRedirectUri(redirectUri)
             .Build();
-
+     
             await HttpContext.ChallengeAsync(Auth0Constants.AuthenticationScheme, authenticationProperties);
         }
     }

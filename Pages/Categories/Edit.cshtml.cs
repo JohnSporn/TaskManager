@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
@@ -6,6 +7,7 @@ using TaskManager.Data.Repositories;
 
 namespace TaskManager.Pages.Categories
 {
+    [Authorize]
     public class EditModel : PageModel
     {
         private readonly ICategoryRepository _repository;
