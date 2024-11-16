@@ -1,5 +1,5 @@
 ﻿using Auth0.AspNetCore.Authentication;
-
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.DependencyInjection;
 using TaskManager.Data;
 using TaskManager.Data.Repositories;

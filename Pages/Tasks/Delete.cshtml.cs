@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Security.Claims;
 using TaskManager.Data.Repositories;
 
 namespace TaskManager.Pages.Tasks
@@ -26,7 +27,7 @@ namespace TaskManager.Pages.Tasks
                 return NotFound();
             }
 
-            var task = await _taskRepository.Tasks_GetById(id);
+            var task = await _taskRepository.Tasks_GetById(id, User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
             if (task == null)
             {
@@ -42,7 +43,7 @@ namespace TaskManager.Pages.Tasks
                 return NotFound();
             }
 
-            var task = await _taskRepository.Tasks_GetById(id);
+            var task = await _taskRepository.Tasks_GetById(id, User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
             if (task == null)
             {

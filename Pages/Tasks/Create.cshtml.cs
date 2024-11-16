@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using TaskManager.Data.Models;
 using TaskManager.Data.Repositories;
 
@@ -55,7 +56,8 @@ namespace TaskManager.Pages.Tasks
                 DueDate = Input.DueDate,
                 Priority = Input.Priority,
                 Category = Input.Category,
-                IsComplete = Input.IsComplete
+                IsComplete = Input.IsComplete,
+                UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
             };
             await _taskRepository.Task_Upsert(task);
             return RedirectToPage("/Index");

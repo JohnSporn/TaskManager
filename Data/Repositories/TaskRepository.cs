@@ -1,6 +1,7 @@
 ﻿
 
 using Dapper;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualBasic;
@@ -18,34 +19,7 @@ namespace TaskManager.Data.Repositories
             _connectionString = configuration.GetConnectionString("TaskManager");
         }
 
-        public async IAsyncEnumerable<TaskItem> Tasks_Get()
-        {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var sql = @"SELECT T.Id, 
-                                   T.Name, 
-                                   T.DueDate, 
-                                   T.Priority,
-                                   T.CategoryId,
-                                   C.Name, 
-                                   T.IsComplete
-                            FROM TaskItem T INNER JOIN Category C
-                            ON T.CategoryId = C.Id";
-                var tasks = await connection.QueryAsync<TaskItem, Category, TaskItem>(sql, (task, category) =>
-                {
-                    task.Category = category;
-                    return task;
-                },
-                splitOn: "CategoryId");
-
-                foreach (var item in tasks)
-                {
-                    yield return item;
-                }
-            }
-        }
-
-        public async Task<TaskItem> Tasks_GetById(int? id)
+        public async IAsyncEnumerable<TaskItem?> Tasks_Get(string userId)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -58,13 +32,42 @@ namespace TaskManager.Data.Repositories
                                    T.IsComplete
                             FROM TaskItem T INNER JOIN Category C
                             ON T.CategoryId = C.Id
-                            WHERE T.Id = @Id";
+                            WHERE T.UserId = @UserId";
                 var tasks = await connection.QueryAsync<TaskItem, Category, TaskItem>(sql, (task, category) =>
                 {
                     task.Category = category;
                     return task;
                 },
-                new { Id = id },
+                new { UserId = userId },
+                splitOn: "CategoryId");
+
+                foreach (var item in tasks)
+                {
+                    yield return item;
+                }
+            }
+        }
+
+        public async Task<TaskItem> Tasks_GetById(int? id, string userId)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var sql = @"SELECT T.Id, 
+                                   T.Name, 
+                                   T.DueDate, 
+                                   T.Priority,
+                                   T.CategoryId,
+                                   C.Name, 
+                                   T.IsComplete
+                            FROM TaskItem T INNER JOIN Category C
+                            ON T.CategoryId = C.Id
+                            WHERE T.Id = @Id AND T.UserId = @UserId";
+                var tasks = await connection.QueryAsync<TaskItem, Category, TaskItem>(sql, (task, category) =>
+                {
+                    task.Category = category;
+                    return task;
+                },
+                new { Id = id, UserId = userId },
                 splitOn: "CategoryId");
 
                 return tasks.FirstOrDefault();
@@ -75,8 +78,8 @@ namespace TaskManager.Data.Repositories
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                var sql1 = "DELETE FROM TaskItem WHERE Id = @Id";
-                return await connection.ExecuteAsync(sql1, new { Id = Task.Id });
+                var sql1 = "DELETE FROM TaskItem WHERE Id = @Id AND UserId = @UserId";
+                return await connection.ExecuteAsync(sql1, new { Id = Task.Id, UserId = Task.UserId });
             }
         }
 
@@ -86,37 +89,53 @@ namespace TaskManager.Data.Repositories
             {
                 if (task.Id == 0)
                 {
-                    var sqlInsert = @"INSERT INTO TaskItem (Name, DueDate, Priority, CategoryId, IsComplete)
-                                 VALUES (@Name, @DueDate, @Priority, @Category, @IsComplete)";
+                    var sqlInsert = @"INSERT INTO TaskItem (Name, DueDate, Priority, CategoryId, IsComplete, UserId)
+                                 VALUES (@Name, @DueDate, @Priority, @Category, @IsComplete, @UserId)";
                     return await connection.ExecuteAsync(sqlInsert, new
                     {
                         Name = task.Name,
                         DueDate = task.DueDate,
                         Priority = task.Priority,
                         Category = task.Category.Id,
-                        IsComplete = task.IsComplete
+                        IsComplete = task.IsComplete,
+                        UserId = task.UserId
                     });
                 }
                 else
                 {
-                    using (var transaction = connection.BeginTransaction())
+                    using (var transaction = await connection.BeginTransactionAsync())
                     {
-                        var sqlUpdateTask = @"UPDATE TaskItem 
+                        try
+                        {
+                            connection.Open();
+                            var sqlUpdateTask = @"UPDATE TaskItem 
                                           SET Name = @Name, 
                                               DueDate = @DueDate, 
                                               Priority = @Priority, 
                                               CategoryId = @Category,
                                               IsComplete = @IsComplete 
-                                          WHERE Id = @Id";
-                        return await connection.ExecuteAsync(sqlUpdateTask, new
+                                          WHERE Id = @Id AND UserId = @UserId";
+                            var result = await connection.ExecuteAsync(sqlUpdateTask, new
+                            {
+                                Id = task.Id,
+                                Name = task.Name,
+                                DueDate = task.DueDate,
+                                Priority = task.Priority,
+                                Category = task.Category.Id,
+                                IsComplete = task.IsComplete,
+                                UserId = task.UserId
+                            }, transaction: transaction);
+
+                            await transaction.CommitAsync();
+
+                            return result;
+                        }
+                        catch(Exception ex)
                         {
-                            Id = task.Id,
-                            Name = task.Name,
-                            DueDate = task.DueDate,
-                            Priority = task.Priority,
-                            Category = task.Category.Id,
-                            IsComplete = task.IsComplete
-                        });
+                            await transaction.RollbackAsync();
+                            Console.WriteLine(ex.ToString());
+                            return 0;
+                        }
                     }
                 }
             }
