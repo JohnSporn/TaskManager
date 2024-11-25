@@ -5,6 +5,9 @@
 }
 
 <div class="container">
+    <div class="pb-2" style="justify-self:right;">
+        <a class="btn btn-success" asp-page="/Categories/Create">New Category</a>
+    </div>
     <h4>Categories</h4>
     <hr />
     @foreach (var item in Model.Categories)

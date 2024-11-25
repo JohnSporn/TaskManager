@@ -50,7 +50,12 @@ namespace TaskManager.Pages.Categories
 
             try
             {
-                await _repository.Category_Delete(category);
+                var result = await _repository.Category_Delete(category);
+                if (result == 0)
+                {
+                    ErrorMessage = "There was an error deleting this category";
+                    return Page();
+                }
                 return RedirectToPage("/Categories/Index");
             }
             catch (Exception ex)

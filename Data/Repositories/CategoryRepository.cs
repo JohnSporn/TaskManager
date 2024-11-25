@@ -35,7 +35,9 @@ namespace TaskManager.Data.Repositories
         public async Task<int> Category_Delete(Category category)
         {
             var connection = new SqlConnection(_connectionString);
-            var sql1 = "DELETE FROM Category WHERE Id = @Id";
+
+            var sql1 = "DELETE FROM TaskItem WHERE CategoryId = @Id " + "DELETE FROM Category WHERE Id = @Id";
+
             return await connection.ExecuteAsync(sql1, new { Id = category.Id });
         }
 

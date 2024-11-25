@@ -48,7 +48,7 @@ namespace TaskManager.Data.Repositories
             }
         }
 
-        public async Task<TaskItem> Tasks_GetById(int? id, string userId)
+        public async Task<TaskItem?> Tasks_GetById(int? id, string userId)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -56,9 +56,9 @@ namespace TaskManager.Data.Repositories
                                    T.Name, 
                                    T.DueDate, 
                                    T.Priority,
+                                   T.IsComplete,
                                    T.CategoryId,
-                                   C.Name, 
-                                   T.IsComplete
+                                   C.Name
                             FROM TaskItem T INNER JOIN Category C
                             ON T.CategoryId = C.Id
                             WHERE T.Id = @Id AND T.UserId = @UserId";
@@ -103,18 +103,18 @@ namespace TaskManager.Data.Repositories
                 }
                 else
                 {
+                    connection.Open();
                     using (var transaction = await connection.BeginTransactionAsync())
                     {
                         try
                         {
-                            connection.Open();
                             var sqlUpdateTask = @"UPDATE TaskItem 
-                                          SET Name = @Name, 
-                                              DueDate = @DueDate, 
-                                              Priority = @Priority, 
-                                              CategoryId = @Category,
-                                              IsComplete = @IsComplete 
-                                          WHERE Id = @Id AND UserId = @UserId";
+                                                  SET Name = @Name, 
+                                                  DueDate = @DueDate, 
+                                                  Priority = @Priority, 
+                                                  CategoryId = @Category,
+                                                  IsComplete = @IsComplete 
+                                                WHERE Id = @Id AND UserId = @UserId";
                             var result = await connection.ExecuteAsync(sqlUpdateTask, new
                             {
                                 Id = task.Id,

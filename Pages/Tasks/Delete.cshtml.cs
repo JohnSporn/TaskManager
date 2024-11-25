@@ -52,7 +52,14 @@ namespace TaskManager.Pages.Tasks
 
             try
             {
-                await _taskRepository.Task_Delete(task);
+                // Add userid.
+                task.UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var result = await _taskRepository.Task_Delete(task);
+                if(result == 0)
+                {
+                    Message = "There was an error deleting this task";
+                    return Page();
+                }
                 return RedirectToPage("/Index");
             }
             catch (Exception ex)

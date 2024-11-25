@@ -4,6 +4,11 @@
     ViewData["Title"] = "Edit";
 }
 
+@if(Model.ErrorMessage != null) 
+{
+    <p class="text-danger text-center">@Model.ErrorMessage</p>
+}
+
 <form method="post" class="container w-25">
     <div>
         <label class="form-label" asp-for="Input.Name"></label>
@@ -24,8 +29,7 @@
     </div>
     <div>
         <label class="form-label" asp-for="Input.Category"></label>
-        <select class="form-select" asp-for="Input.Category">
-            <option selected hidden value="@Model.Input.Category.Id">@Model.Input.Category.Name</option>
+        <select class="form-select" asp-for="Input.Category.Id">
             @foreach (var item in Model.Categories)
             {
                 <option value="@item.Id">@item.Name</option>
@@ -35,7 +39,6 @@
     <div>
         <label class="form-label" asp-for="Input.IsComplete"></label>
         <select class="form-select" asp-for="Input.IsComplete">
-            <option selected hidden>Choose one</option>
             <option value="true">Yes</option>
             <option value="false">No</option>
         </select>

@@ -39,6 +39,7 @@ namespace TaskManager.Pages.Tasks
         [BindProperty]
         public InputModel Input { get; set; }
         public IList<Category> Categories { get; set; } = new List<Category>();
+        public string? ErrorMessage { get; set; }
 
         public async Task<IActionResult> OnGet(int? id)
         {
@@ -79,7 +80,12 @@ namespace TaskManager.Pages.Tasks
                 IsComplete = Input.IsComplete,
                 UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
             };
-            await _repository.Task_Upsert(task);
+            var result = await _repository.Task_Upsert(task);
+            if(result == 0)
+            {
+                ErrorMessage = "There was an error updating this task";
+                return Page();
+            }
             return RedirectToPage("/Index");
         }
     }

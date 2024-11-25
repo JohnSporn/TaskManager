@@ -39,6 +39,7 @@ namespace TaskManager.Pages.Tasks
         [BindProperty]
         public InputModel Input { get; set; }
         public IList<Category> Categories { get; set; } = new List<Category>();
+        public string? ErrorMessage { get; set; }
 
         public async void OnGet()
         {
@@ -59,7 +60,12 @@ namespace TaskManager.Pages.Tasks
                 IsComplete = Input.IsComplete,
                 UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
             };
-            await _taskRepository.Task_Upsert(task);
+            var result = await _taskRepository.Task_Upsert(task);
+            if (result == 0)
+            {
+                ErrorMessage = "There was an error creating this task";
+                return Page();
+            }
             return RedirectToPage("/Index");
         }
     }
