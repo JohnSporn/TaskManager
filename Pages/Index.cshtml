@@ -5,103 +5,346 @@
 }
 
 <div class="container">
-    <div class="pb-2" style="justify-self:right;">
-        <a class="btn btn-success" asp-page="/Tasks/Create">New Task</a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-tasks me-2 text-primary"></i>Task Management
+        </h1>
+        <a class="btn btn-success" asp-page="/Tasks/Create">
+            <i class="fas fa-plus me-1"></i>New Task
+        </a>
     </div>
+    
+    <!-- Search and Filter Controls -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" class="form-control" id="taskSearch" placeholder="Search tasks by name or category...">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary" onclick="sortTable(1, 'allTasksTable')">
+                            <i class="fas fa-calendar-alt me-1"></i>Sort by Date
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="sortTable(2, 'allTasksTable')">
+                            <i class="fas fa-exclamation-triangle me-1"></i>Sort by Priority
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
             <button class="nav-link active" id="nav-all-tab" data-bs-toggle="tab" data-bs-target="#nav-all" type="button" role="tab" aria-controls="nav-all" aria-selected="true">
-                All Tasks
+                <i class="fas fa-list me-1"></i>All Tasks (@Model.Tasks.Count)
             </button>
             <button class="nav-link" id="nav-completed-tab" data-bs-toggle="tab" data-bs-target="#nav-completed" type="button" role="tab" aria-controls="nav-completed" aria-selected="false">
-                Completed Tasks
+                <i class="fas fa-check-circle me-1"></i>Completed (@Model.TasksCompleted.Count)
             </button>
             <button class="nav-link" id="nav-pending-tab" data-bs-toggle="tab" data-bs-target="#nav-pending" type="button" role="tab" aria-controls="nav-pending" aria-selected="false">
-                Pending Tasks
+                <i class="fas fa-clock me-1"></i>Pending (@Model.TasksPending.Count)
             </button>
         </div>
     </nav>
-    <div class="tab-content" id="nav-tabContent border border-2">
+    
+    <div class="tab-content" id="nav-tabContent">
+        <!-- All Tasks Tab -->
         <div class="tab-pane fade show active" id="nav-all" role="tabpanel" aria-labelledby="nav-all-tab" tabindex="0">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Task</th>
-                        <th>Due Date</th>
-                        <th>Priority</th>
-                        <th>Category</th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.Tasks)
-                    {
+            <div class="table-responsive">
+                <table class="table table-hover" id="allTasksTable">
+                    <thead>
                         <tr>
-                            <td>@item.Name</td>
-                            <td>@item.DueDate</td>
-                            <td>@item.Priority</td>
-                            <td>@item.Category.Name</td>
-                            <td><a class="btn-link" asp-page="/Tasks/Edit" asp-route-id="@item.Id">Edit</a></td>
-                            <td><a class="btn-link" asp-page="/Tasks/Delete" asp-route-id="@item.Id">Cancel</a></td>
+                            <th onclick="sortTable(0, 'allTasksTable')" style="cursor: pointer;">
+                                Task Name <i class="fas fa-sort sort-icon ms-1"></i>
+                            </th>
+                            <th onclick="sortTable(1, 'allTasksTable')" style="cursor: pointer;">
+                                Due Date <i class="fas fa-sort sort-icon ms-1"></i>
+                            </th>
+                            <th onclick="sortTable(2, 'allTasksTable')" style="cursor: pointer;">
+                                Priority <i class="fas fa-sort sort-icon ms-1"></i>
+                            </th>
+                            <th onclick="sortTable(3, 'allTasksTable')" style="cursor: pointer;">
+                                Category <i class="fas fa-sort sort-icon ms-1"></i>
+                            </th>
+                            <th>Status</th>
+                            <th>Reminder</th>
+                            <th>Assigned To</th>
+                            <th>Actions</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Tasks)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@item.Name</strong>
+                                </td>
+                                <td>
+                                    <i class="fas fa-calendar me-1"></i>
+                                    @item.DueDate.ToString("MMM dd, yyyy")
+                                </td>
+                                <td>
+                                    <span class="priority-badge priority-@item.Priority.ToString().ToLower()">
+                                        @item.Priority
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-tag me-1"></i>@item.Category.Name
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (item.IsComplete)
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check me-1"></i>Completed
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-clock me-1"></i>Pending
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.ReminderEnabled && item.ReminderDate.HasValue)
+                                    {
+                                        <span class="badge bg-info">
+                                            <i class="fas fa-bell me-1"></i>@item.ReminderDate.Value.ToString("MMM dd")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No reminder</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.AssignedToUserName))
+                                    {
+                                        <span class="badge bg-primary">
+                                            <i class="fas fa-user me-1"></i>@item.AssignedToUserName
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Unassigned</span>
+                                    }
+                                    @if (item.SharedWithUserIds.Any())
+                                    {
+                                        <br />
+                                        <small class="text-muted">
+                                            <i class="fas fa-share-alt me-1"></i>Shared with @item.SharedWithUserIds.Count others
+                                        </small>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a class="btn btn-sm btn-outline-primary" asp-page="/Tasks/Edit" asp-route-id="@item.Id" title="Edit Task">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a class="btn btn-sm btn-outline-danger" asp-page="/Tasks/Delete" asp-route-id="@item.Id" title="Delete Task">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
+        
+        <!-- Completed Tasks Tab -->
         <div class="tab-pane fade" id="nav-completed" role="tabpanel" aria-labelledby="nav-completed-tab" tabindex="0">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Task</th>
-                        <th>Due Date</th>
-                        <th>Priority</th>
-                        <th>Category</th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.TasksCompleted)
-                    {
+            <div class="table-responsive">
+                <table class="table table-hover" id="completedTasksTable">
+                    <thead>
                         <tr>
-                            <td>@item.Name</td>
-                            <td>@item.DueDate</td>
-                            <td>@item.Priority</td>
-                            <td>@item.Category.Name</td>
-                            <td><a class="btn-link" asp-page="/Tasks/Edit" asp-route-id="@item.Id">Edit</a></td>
-                            <td><a class="btn-link" asp-page="/Tasks/Delete" asp-route-id="@item.Id">Cancel</a></td>
+                            <th>Task Name</th>
+                            <th>Due Date</th>
+                            <th>Priority</th>
+                            <th>Category</th>
+                            <th>Completed Date</th>
+                            <th>Assigned To</th>
+                            <th>Actions</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.TasksCompleted)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@item.Name</strong>
+                                </td>
+                                <td>
+                                    <i class="fas fa-calendar me-1"></i>
+                                    @item.DueDate.ToString("MMM dd, yyyy")
+                                </td>
+                                <td>
+                                    <span class="priority-badge priority-@item.Priority.ToString().ToLower()">
+                                        @item.Priority
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-tag me-1"></i>@item.Category.Name
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (item.CompletedDate.HasValue)
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check me-1"></i>@item.CompletedDate.Value.ToString("MMM dd, yyyy")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">N/A</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.AssignedToUserName))
+                                    {
+                                        <span class="badge bg-primary">
+                                            <i class="fas fa-user me-1"></i>@item.AssignedToUserName
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Unassigned</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a class="btn btn-sm btn-outline-primary" asp-page="/Tasks/Edit" asp-route-id="@item.Id" title="Edit Task">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a class="btn btn-sm btn-outline-danger" asp-page="/Tasks/Delete" asp-route-id="@item.Id" title="Delete Task">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
+        
+        <!-- Pending Tasks Tab -->
         <div class="tab-pane fade" id="nav-pending" role="tabpanel" aria-labelledby="nav-pending-tab" tabindex="0">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Task</th>
-                        <th>Due Date</th>
-                        <th>Priority</th>
-                        <th>Category</th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.TasksPending)
-                    {
-                        <tr onclick="Edit">
-                            <td>@item.Name</td>
-                            <td>@item.DueDate</td>
-                            <td>@item.Priority</td>
-                            <td>@item.Category.Name</td>
-                            <td><a class="btn-link" asp-page="/Tasks/Edit" asp-route-id="@item.Id">Edit</a></td>
-                            <td><a class="btn-link" asp-page="/Tasks/Delete" asp-route-id="@item.Id">Cancel</a></td>
+            <div class="table-responsive">
+                <table class="table table-hover" id="pendingTasksTable">
+                    <thead>
+                        <tr>
+                            <th>Task Name</th>
+                            <th>Due Date</th>
+                            <th>Priority</th>
+                            <th>Category</th>
+                            <th>Reminder</th>
+                            <th>Assigned To</th>
+                            <th>Actions</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.TasksPending)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@item.Name</strong>
+                                </td>
+                                <td>
+                                    <i class="fas fa-calendar me-1"></i>
+                                    @item.DueDate.ToString("MMM dd, yyyy")
+                                </td>
+                                <td>
+                                    <span class="priority-badge priority-@item.Priority.ToString().ToLower()">
+                                        @item.Priority
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-tag me-1"></i>@item.Category.Name
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (item.ReminderEnabled && item.ReminderDate.HasValue)
+                                    {
+                                        <span class="badge bg-info">
+                                            <i class="fas fa-bell me-1"></i>@item.ReminderDate.Value.ToString("MMM dd")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No reminder</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.AssignedToUserName))
+                                    {
+                                        <span class="badge bg-primary">
+                                            <i class="fas fa-user me-1"></i>@item.AssignedToUserName
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Unassigned</span>
+                                    }
+                                    @if (item.SharedWithUserIds.Any())
+                                    {
+                                        <br />
+                                        <small class="text-muted">
+                                            <i class="fas fa-share-alt me-1"></i>Shared with @item.SharedWithUserIds.Count others
+                                        </small>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a class="btn btn-sm btn-outline-primary" asp-page="/Tasks/Edit" asp-route-id="@item.Id" title="Edit Task">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a class="btn btn-sm btn-outline-danger" asp-page="/Tasks/Delete" asp-route-id="@item.Id" title="Delete Task">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Initialize search functionality
+        document.getElementById('taskSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value;
+            const activeTab = document.querySelector('.tab-pane.active');
+            const table = activeTab.querySelector('table');
+            filterTasks(searchTerm, table.id);
+        });
+        
+        // Update search when switching tabs
+        document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function() {
+                const searchTerm = document.getElementById('taskSearch').value;
+                if (searchTerm) {
+                    const activeTab = document.querySelector('.tab-pane.active');
+                    const table = activeTab.querySelector('table');
+                    filterTasks(searchTerm, table.id);
+                }
+            });
+        });
+    </script>
+}

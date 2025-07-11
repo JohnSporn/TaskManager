@@ -14,7 +14,13 @@ namespace TaskManager.Data.Repositories
                 Priority = Priority.High,
                 IsComplete = false,
                 Category = new Category { Id = 1, Name = "Work" },
-                UserId = "test-user-id"
+                UserId = "test-user-id",
+                ReminderDate = DateTime.Now.AddDays(2),
+                ReminderEnabled = true,
+                AssignedToUserId = "test-user-id",
+                AssignedToUserName = "Test User",
+                Notes = "High priority project proposal due soon",
+                CreatedDate = DateTime.Now.AddDays(-5)
             },
             new TaskItem
             {
@@ -24,7 +30,12 @@ namespace TaskManager.Data.Repositories
                 Priority = Priority.Medium,
                 IsComplete = true,
                 Category = new Category { Id = 2, Name = "Development" },
-                UserId = "test-user-id"
+                UserId = "test-user-id",
+                CompletedDate = DateTime.Now.AddHours(-2),
+                AssignedToUserId = "test-user-id",
+                AssignedToUserName = "Test User",
+                Notes = "Code review completed successfully",
+                CreatedDate = DateTime.Now.AddDays(-3)
             },
             new TaskItem
             {
@@ -34,7 +45,12 @@ namespace TaskManager.Data.Repositories
                 Priority = Priority.Low,
                 IsComplete = false,
                 Category = new Category { Id = 1, Name = "Work" },
-                UserId = "test-user-id"
+                UserId = "test-user-id",
+                ReminderDate = DateTime.Now.AddDays(4),
+                ReminderEnabled = true,
+                SharedWithUserIds = new List<string> { "teammate-1", "teammate-2" },
+                Notes = "Documentation needs to be updated for new features",
+                CreatedDate = DateTime.Now.AddDays(-2)
             },
             new TaskItem
             {
@@ -44,7 +60,14 @@ namespace TaskManager.Data.Repositories
                 Priority = Priority.Medium,
                 IsComplete = false,
                 Category = new Category { Id = 3, Name = "Management" },
-                UserId = "test-user-id"
+                UserId = "test-user-id",
+                ReminderDate = DateTime.Now.AddDays(1),
+                ReminderEnabled = true,
+                AssignedToUserId = "manager-1",
+                AssignedToUserName = "Project Manager",
+                SharedWithUserIds = new List<string> { "team-member-1", "team-member-2" },
+                Notes = "Quarterly planning meeting with the team",
+                CreatedDate = DateTime.Now.AddDays(-1)
             }
         };
 
