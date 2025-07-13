@@ -9,15 +9,24 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-builder.Services.AddAuth0WebAppAuthentication(options =>
-{
-    options.Domain = builder.Configuration["Auth0:Domain"];
-    options.ClientId = builder.Configuration["Auth0:ClientId"];
-});
+// Temporarily disable Auth0 for development
+// builder.Services.AddAuth0WebAppAuthentication(options =>
+// {
+//     options.Domain = builder.Configuration["Auth0:Domain"];
+//     options.ClientId = builder.Configuration["Auth0:ClientId"];
+// });
 
-builder.Services.AddScoped<ITaskRepository, TaskRepository>();
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+// Add cookie authentication instead
+builder.Services.AddAuthentication("Cookies")
+    .AddCookie("Cookies", options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+    });
+
+builder.Services.AddScoped<ITaskRepository, InMemoryTaskRepository>();
+builder.Services.AddScoped<ICategoryRepository, InMemoryCategoryRepository>();
+builder.Services.AddScoped<IUserRepository, InMemoryUserRepository>();
 
 var app = builder.Build();
 
@@ -40,3 +49,6 @@ app.UseAuthorization();
 app.MapRazorPages();
 
 app.Run();
+
+// Make the Program class accessible for testing
+public partial class Program { }
